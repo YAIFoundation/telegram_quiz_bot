@@ -18,7 +18,7 @@ class Quiz:
     def __init__(self, token: str) -> None:
         self.TOKEN = token
 
-    def initilize(self):
+    def run(self):
         updater = Updater(token=Config.api)
         dispatcher = updater.dispatcher
         roles = setup_roles(dispatcher)
@@ -195,6 +195,6 @@ if __name__ == '__main__':
         format='%(levelname)s:%(asctime)s:%(filename)s,%(lineno)d:%(name)s.%(funcName)s:%(message)s', level=logging.WARN)
     if not (Config.api == "None" or Config.sheet1 == "None" or Config.sheet2 == "None" or Config.heroku == "None"):
         quiz_bot = Quiz(Config.api)
-        quiz_bot.initilize()
+        quiz_bot.run()
     else:
         logger.error("Check environment variables")
