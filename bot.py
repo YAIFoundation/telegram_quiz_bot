@@ -17,6 +17,8 @@ from telegram.utils.helpers import mention_markdown, escape_markdown
 class Quiz:
     def __init__(self, token: str) -> None:
         self.TOKEN = token
+        self.quiz1 = get(Config.sheet1)
+        self.quiz2 = get(Config.sheet2)
 
     def run(self):
         updater = Updater(token=Config.api)
@@ -78,19 +80,21 @@ class Quiz:
 
     def choose_quiz(self, update, context):
         chosen = update.callback_query.data
+        update.callback_query.answer()
+        response = None
         if chosen == "quiz1":
-            context.chat_data['current'] = Config.sheet1
+            response = self.quiz1
         elif chosen == "quiz2":
-            context.chat_data['current'] = Config.sheet2
-        response = get(context.chat_data['current'])
-        result = response.json()
-        context.chat_data["qlist"] = QuestionList(result)
-        keyboard = [[
-            InlineKeyboardButton("start", callback_data="start_quiz")
-        ]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        context.chat_data['message'].edit_text(text=f"{chosen} selected!",
-                                               reply_markup=reply_markup)
+            response = self.quiz2
+        if response is not None:
+            result = response.json()
+            context.chat_data["qlist"] = QuestionList(result)
+            keyboard = [[
+                InlineKeyboardButton("start", callback_data="start_quiz")
+            ]]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            context.chat_data['message'].edit_text(text=f"{chosen} selected!",
+                                                   reply_markup=reply_markup)
 
     @staticmethod
     def parse_question(question: Question):
