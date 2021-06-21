@@ -39,6 +39,7 @@ class Quiz:
                                                      pattern='^' + r'next' +
                                                      '$')
         stop_button_handler = CommandHandler('stop', self.stop_quiz)
+        update_handler = CommandHandler('update', self.update_quiz)
 
         dispatcher.add_handler(CommandHandler('start', self.start))
         dispatcher.add_handler(RolesHandler(quiz_handler, roles.chat_admins))
@@ -51,6 +52,7 @@ class Quiz:
             RolesHandler(next_question_handler, roles.chat_admins))
         dispatcher.add_handler(
             RolesHandler(stop_button_handler, roles.chat_admins))
+        dispatcher.add_handler(RolesHandler(update_handler, roles.chat_admins))
 
         updater.start_webhook(listen="0.0.0.0",
                               port=int(Config.PORT),
@@ -95,6 +97,11 @@ class Quiz:
             reply_markup = InlineKeyboardMarkup(keyboard)
             context.chat_data['message'].edit_text(text=f"{chosen} selected!",
                                                    reply_markup=reply_markup)
+
+    def update_quiz(self, update, context):
+        self.quiz1 = get(Config.sheet1)
+        self.quiz2 = get(Config.sheet2)
+        update.effective_message.reply_text("Quizzes updated successfully!")
 
     @staticmethod
     def parse_question(question: Question):
